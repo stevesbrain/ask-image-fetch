@@ -7,6 +7,8 @@ import http.client
 
 # Some arguments for the command line
 import argparse
+import re
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-u", "--url", dest="user_url", help="The URL for parsing", type=str)
@@ -26,6 +28,14 @@ soup = BeautifulSoup(page, 'lxml')
 # Assign all <img> tags to tag types
 
 tag = soup.img
+
+# Finding data-poll-url; using find instead of findAll
+# as findAll returns "results set" and not tag
+
+data_tag = soup.find('a', id="newItemsReady")
+
+print(data_tag['data-poll-url'])
+
 
 # Look for <img> that has both src and onerror - other images in page
 # that were extraneous did not have these attributes
