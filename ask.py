@@ -12,30 +12,35 @@ import re
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-u", "--url", dest="user_url", help="The URL for parsing", type=str)
-
 args = parser.parse_args()
+
+
+def fetch_page(url):
+    page = urllib.request.urlopen(url)
+    return page
 
 # URL from the arguments; assign to variable and fetch
 
 web_url = args.user_url
 
-page = urllib.request.urlopen(web_url)
-
 # Parse the HTML with lxml
 
-soup = BeautifulSoup(page, 'lxml')
-
-# Assign all <img> tags to tag types
-
-tag = soup.img
+soup = BeautifulSoup(fetch_page(web_url), 'lxml')
 
 # Finding data-poll-url; using find instead of findAll
 # as findAll returns "results set" and not tag
 
 data_tag = soup.find('a', id="newItemsReady")
+data_poll_url = data_tag['data-poll-url']
+poll_score = data_poll_url.split("=")[1]
 
-print(data_tag['data-poll-url'])
+# Setting up second page for fetches - testing
 
+soup = BeautifulSoup(fetch_page(web_url + "/answers/more?page=3&score=" + poll_score), 'lxml')
+
+# Assign all <img> tags to tag types
+
+tag = soup.img
 
 # Look for <img> that has both src and onerror - other images in page
 # that were extraneous did not have these attributes
